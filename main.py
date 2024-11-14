@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, Query
 from pydantic import BaseModel
 from chatbot import get_chatbot_response  # 챗봇 로직 불러오기
 
@@ -6,10 +6,6 @@ app = FastAPI()
 
 class ChatRequest(BaseModel):
     message: str
-
-@app.get("/")
-async def root():
-    return {"message": "welcom to the FastAPI application!"}
 
 @app.post("/chat/")
 async def chat(request: ChatRequest):
@@ -19,5 +15,5 @@ async def chat(request: ChatRequest):
         response = get_chatbot_response(user_message)
         return {"response": response}
     except Exception as e:
-        # 오류 발생 시 HTTPException 반환
         raise HTTPException(status_code=500, detail=str(e))
+

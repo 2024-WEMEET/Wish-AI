@@ -12,8 +12,9 @@ def create_connection():
         connection = mysql.connector.connect(
             host=os.getenv("MYSQL_HOST"),       # MySQL 서버 호스트
             user=os.getenv("MYSQL_USER"),       # 사용자 이름
-            password=os.getenv("MYSQL_PASSWORD"), # 비밀번호
-            database=os.getenv("MYSQL_DATABASE")  # 데이터베이스 이름
+            password=os.getenv("MYSQL_PW"), # 비밀번호
+            database=os.getenv("MYSQL_DATABASE"),  # 데이터베이스 이름
+            port=int(os.getenv("MYSQL_PORT","3306")) 
         )
         if connection.is_connected():
             print("MySQL 데이터베이스에 성공적으로 연결되었습니다.")

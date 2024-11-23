@@ -7,11 +7,6 @@ app = FastAPI()
 class ChatRequest(BaseModel):
     message: str
 
-@app.on_event("startup")
-async def startup_event():
-    # RAG 리소스 초기화
-    initialize_rag_resources()
-
 @app.post("/chat/")
 async def chat(request: ChatRequest):
     user_message = request.message

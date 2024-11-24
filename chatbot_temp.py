@@ -32,6 +32,7 @@ def load_and_merge_vectorstores(db_paths, embedding_model):
     return vectorstore
 
 def get_rag_response(user_message: str) -> str:
+    vectorstore, openai_model = initialize_rag_resources()
     try:
         system_prompt_template = apply_prompt_template()
         qa = ConversationalRetrievalChain.from_llm(
@@ -125,6 +126,7 @@ def initialize_rag_resources():
         max_tokens=200,
         openai_api_key=openai_api_key
     )
+    return vectorstore,openai_model
 
 
 def apply_prompt_template():

@@ -109,8 +109,7 @@ def get_chatbot_response(user_message: str) -> str:
         close_connection(connection)
 
 
-def initialize_rag_resources():
-    global vectorstore, openai_model
+def initialize_rag_resources(DB_PATHS):
     embeddings = HuggingFaceEmbeddings(
         model_name=MODEL_NAME,
         model_kwargs={"device": "cpu"},

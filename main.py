@@ -7,6 +7,14 @@ app = FastAPI()
 class ChatRequest(BaseModel):
     message: str
 
+
+@asynccontextmanager
+async def lifespan(app:FastAPI):
+    initialize_rag_resources()
+    print("RAG resources initialized.")
+    yield
+    
+
 @app.post("/chat/")
 async def chat(request: ChatRequest):
     user_message = request.message

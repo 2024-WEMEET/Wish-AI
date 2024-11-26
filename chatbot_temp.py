@@ -1,8 +1,8 @@
 import openai
 import os
 from langchain.chat_models import ChatOpenAI
-from langchain.vectorstores import FAISS
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.chains import ConversationalRetrievalChain
 from langchain.prompts import PromptTemplate
 from langchain.callbacks import StreamingStdOutCallbackHandler
@@ -24,7 +24,7 @@ OPENAI_MODEL = "gpt-4o-mini-2024-07-18"
 def load_and_merge_vectorstores(db_paths, embedding_model):
     vectorstore = None
     for db_path in db_paths:
-        temp_store = FAISS.load_local(db_path, embedding_model, allow_dangerous_serialization=True)
+        temp_store = FAISS.load_local(db_path, embedding_model, allow_dangerous_deserialization=True)
         if vectorstore is None:
             vectorstore = temp_store
         else:
@@ -32,18 +32,19 @@ def load_and_merge_vectorstores(db_paths, embedding_model):
     return vectorstore
 
 def get_rag_response(user_message: str) -> str:
-    vectorstore, openai_model = initialize_rag_resources()
+    vectorstore, openai_model = initialize_rag_resources(DB_PATHS)
     try:
         system_prompt_template = apply_prompt_template()
-        qa = ConversationalRetrievalChain.from_llm(
+        chain = ConversationalRetrievalChain.from_llm(
             llm=openai_model,
             retriever=vectorstore.as_retriever(search_type='mmr', verbose=True),
             get_chat_history=lambda h: h,
-            return_source_documents=True,
+            return_source_documents=False,
             verbose=True
         )
-        response = qa.run(user_message)
-        return response
+        response = chain({"question" : user_message,
+                        "chat_history": []})
+        return response["answer"]
     except Exception as e:
         raise ValueError(f"Error during RAG processing: {str(e)}")
 
